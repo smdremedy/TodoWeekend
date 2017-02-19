@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TodoEkspert</string>
+    <string name="enter_password">Wprowadź login</string>
+    <string name="enter_username">Wprowadź hasło</string>
+    <string name="sing_in">Zaloguj</string>
+</resources>
