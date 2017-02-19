@@ -2,8 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -44,27 +43,42 @@
                 android:hint="@string/enter_password"
                 android:inputType="textPassword" />
 
-            <Button
-                android:id="@+id/sign_in_button"
+            <LinearLayout
+                android:weightSum="4"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/sing_in"
-                tools:ignore="MissingPrefix" />
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/sign_up_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/sing_in" />
+                <Button
+                    android:id="@+id/sign_in_button"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sing_in"
+                    tools:ignore="MissingPrefix" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/sign_up_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sing_in" />
+
+
+            </LinearLayout>
+
 
             <ProgressBar
                 android:id="@+id/progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:visibility="gone"
                 tools:progress="50"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-                tools:visibility="visible"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                tools:visibility="visible" />
         </LinearLayout>
     </FrameLayout>
 </ScrollView>

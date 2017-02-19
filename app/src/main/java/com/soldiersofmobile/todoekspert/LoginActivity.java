@@ -1,6 +1,7 @@
 package com.soldiersofmobile.todoekspert;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginAsyncTask.LoginCallback {
 
 
     public static final int MIN_PASSWORD_LENGTH = 4;
@@ -33,6 +34,8 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.progress)
     ProgressBar progress;
 
+    private LoginManager loginManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,8 @@ public class LoginActivity extends AppCompatActivity {
             usernameEditText.setText("test");
             passwordEditText.setText("test");
         }
+        App app = (App) getApplication();
+        loginManager = app.getLoginManager();
     }
 
     @Override
@@ -50,6 +55,17 @@ public class LoginActivity extends AppCompatActivity {
                 CalligraphyContextWrapper.wrap(newBase));
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loginManager.setLoginCallback(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        loginManager.setLoginCallback(null);
+    }
 
     @OnClick({R.id.sign_in_button, R.id.sign_up_button})
     public void onClick(View view) {
@@ -80,60 +96,27 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         if (!hasErrors) {
-            login(username, password);
+            loginManager.login(username, password);
         }
 
     }
 
-    private void login(String username, String password) {
 
-
-        AsyncTask<String, Integer, String> asyncTask = new AsyncTask<String, Integer, String>() {
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                signInButton.setEnabled(false);
-                progress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            protected String doInBackground(String... params) {
-                for (int i = 0; i < 100; i++) {
-                    try {
-                        Thread.sleep(50);
-                        publishProgress(i);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                return validateCredentials(params[0], params[1]);
-            }
-
-            @Override
-            protected void onProgressUpdate(Integer... values) {
-                super.onProgressUpdate(values);
-                progress.setProgress(values[0]);
-            }
-
-            @Override
-            protected void onPostExecute(String error) {
-                super.onPostExecute(error);
-                signInButton.setEnabled(true);
-                progress.setVisibility(View.GONE);
-                if (error != null) {
-                    Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
-                }
-            }
-        };
-
-        asyncTask.execute(username, password);
-
+    @Override
+    public void showProgress(boolean inProgress) {
+        signInButton.setEnabled(!inProgress);
+        progress.setVisibility(inProgress ? View.VISIBLE : View.GONE);
     }
 
-    private String validateCredentials(String username, String password) {
-        return "test".equals(username) && "test".equals(password) ?
-                null : "Invalid password";
+    @Override
+    public void showError(String error) {
+        if (error != null) {
+            Toast.makeText(LoginActivity.this, error, Toast.LENGTH_SHORT).show();
+        } else {
+            Intent intent = new Intent(this, TodoListActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
     }
 }

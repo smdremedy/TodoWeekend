@@ -13,4 +13,10 @@
     <string name="add">Add</string>
     <string name="refresh">Refresh</string>
     <string name="logout">Logout</string>
+    <string name="ok">OK</string>
+    <string name="dialog_title">Confirm logout</string>
+    <string name="dialog_message">Are you sure?</string>
+    <string name="what_needs_to_be_done">What needs to be done?</string>
+    <string name="done">Done</string>
+    <string name="add_todo">Add Todo</string>
 </resources>
