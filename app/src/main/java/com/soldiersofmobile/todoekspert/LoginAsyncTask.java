@@ -24,10 +24,14 @@ class LoginAsyncTask extends AsyncTask<String, Integer, String> {
     public static final String TOKEN = "token";
     private boolean finished = false;
     private SharedPreferences preferences;
+    private final TodoApi todoApi;
+    private final Converter<ResponseBody, ErrorResponse> converter;
 
-    public LoginAsyncTask(SharedPreferences preferences) {
+    public LoginAsyncTask(SharedPreferences preferences, TodoApi todoApi, Converter<ResponseBody, ErrorResponse> converter) {
 
         this.preferences = preferences;
+        this.todoApi = todoApi;
+        this.converter = converter;
     }
 
 
@@ -88,25 +92,8 @@ class LoginAsyncTask extends AsyncTask<String, Integer, String> {
 
     private String validateCredentials(String username, String password) {
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY
-                : HttpLoggingInterceptor.Level.NONE);
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
-                .build();
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(client)
-                .baseUrl("https://parseapi.back4app.com")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        Converter<ResponseBody, ErrorResponse> converter
-                = retrofit.responseBodyConverter(ErrorResponse.class,
-                new Annotation[0]);
-
-        TodoApi todoApi = retrofit.create(TodoApi.class);
         Call<User> userCall = todoApi.getLogin(username, password);
 
         try {

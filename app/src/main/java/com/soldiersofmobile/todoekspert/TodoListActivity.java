@@ -14,11 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class TodoListActivity extends AppCompatActivity {
 
     public static final String TODO_EXTRA = "todo";
     public static final int REQUEST_CODE_ADD = 123;
     private LoginManager loginManager;
+    private TodoApi todoApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,7 @@ public class TodoListActivity extends AppCompatActivity {
 
         App application = (App) getApplication();
         loginManager = application.getLoginManager();
+        todoApi = application.getTodoApi();
 
         if (loginManager.hasToLogin()) {
             goToLogin();
@@ -73,6 +79,27 @@ public class TodoListActivity extends AppCompatActivity {
 
                 break;
             case R.id.action_refresh:
+
+                Call<TodosResponse> call = todoApi.getTodos(loginManager.getToken());
+
+                call.enqueue(new Callback<TodosResponse>() {
+                    @Override
+                    public void onResponse(Call<TodosResponse> call, Response<TodosResponse> response) {
+                        if (response.isSuccessful()) {
+                            TodosResponse todosResponse = response.body();
+                            for (Todo result : todosResponse.results) {
+                                Log.d("TAG", result.toString());
+                            }
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<TodosResponse> call, Throwable t) {
+
+                    }
+                });
+
                 break;
             case R.id.action_logout:
                 showLogoutDialog();
