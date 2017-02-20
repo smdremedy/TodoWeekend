@@ -8,21 +8,19 @@ import java.io.Serializable;
 public class Todo implements Parcelable {
     private String content;
     private boolean done;
-
-    public Todo(String content, boolean done) {
-        this.content = content;
-        this.done = done;
-    }
+    private String objectId;
 
     protected Todo(Parcel in) {
         content = in.readString();
         done = in.readByte() != 0;
+        objectId = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(content);
         dest.writeByte((byte) (done ? 1 : 0));
+        dest.writeString(objectId);
     }
 
     @Override
@@ -41,6 +39,19 @@ public class Todo implements Parcelable {
             return new Todo[size];
         }
     };
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    public Todo(String content, boolean done) {
+        this.content = content;
+        this.done = done;
+    }
 
     public String getContent() {
         return content;

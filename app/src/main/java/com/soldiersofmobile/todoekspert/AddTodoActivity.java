@@ -29,10 +29,12 @@ public class AddTodoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_todo);
         ButterKnife.bind(this);
 
-        Todo todo
-                = (Todo) getIntent().getParcelableExtra(TodoListActivity.TODO_EXTRA);
-        contentEditText.setText(todo.getContent());
-        doneCheckBox.setChecked(todo.isDone());
+        if (getIntent().hasExtra(TodoListActivity.TODO_EXTRA)) {
+            Todo todo
+                    = (Todo) getIntent().getParcelableExtra(TodoListActivity.TODO_EXTRA);
+            contentEditText.setText(todo.getContent());
+            doneCheckBox.setChecked(todo.isDone());
+        }
     }
 
     @OnClick(R.id.add_button)

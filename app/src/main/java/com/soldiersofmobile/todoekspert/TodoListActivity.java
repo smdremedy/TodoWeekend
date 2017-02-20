@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,8 +11,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,8 +27,17 @@ public class TodoListActivity extends AppCompatActivity {
 
     public static final String TODO_EXTRA = "todo";
     public static final int REQUEST_CODE_ADD = 123;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.todos_list_view)
+    ListView todosListView;
+    @BindView(R.id.content_todo_list)
+    RelativeLayout contentTodoList;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
     private LoginManager loginManager;
     private TodoApi todoApi;
+    private TodosAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +53,7 @@ public class TodoListActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_todo_list);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -46,12 +61,19 @@ public class TodoListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                goToAdd(null);
             }
         });
 
+        adapter = new TodosAdapter();
+        todosListView.setAdapter(adapter);
 
+    }
+
+    @OnItemClick(R.id.todos_list_view)
+    public void itemClick(int position) {
+
+        goToAdd(adapter.getItem(position));
     }
 
     private void goToLogin() {
@@ -70,12 +92,7 @@ public class TodoListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                Intent intent = new Intent(this, AddTodoActivity.class);
-
-                Todo todo = new Todo("kupic cos", true);
-                intent.putExtra(TODO_EXTRA, todo);
-
-                startActivityForResult(intent, REQUEST_CODE_ADD);
+                goToAdd(null);
 
                 break;
             case R.id.action_refresh:
@@ -87,6 +104,8 @@ public class TodoListActivity extends AppCompatActivity {
                     public void onResponse(Call<TodosResponse> call, Response<TodosResponse> response) {
                         if (response.isSuccessful()) {
                             TodosResponse todosResponse = response.body();
+                            adapter.clear();
+                            adapter.addAll(todosResponse.results);
                             for (Todo result : todosResponse.results) {
                                 Log.d("TAG", result.toString());
                             }
@@ -106,6 +125,16 @@ public class TodoListActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void goToAdd(Todo item) {
+        Intent intent = new Intent(this, AddTodoActivity.class);
+
+        if (item != null) {
+            intent.putExtra(TODO_EXTRA, item);
+        }
+
+        startActivityForResult(intent, REQUEST_CODE_ADD);
     }
 
     @Override
