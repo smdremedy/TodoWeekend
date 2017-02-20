@@ -16,6 +16,9 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.soldiersofmobile.todoekspert.db.DbHelper;
+import com.soldiersofmobile.todoekspert.db.TodoDao;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnItemClick;
@@ -38,6 +41,7 @@ public class TodoListActivity extends AppCompatActivity {
     private LoginManager loginManager;
     private TodoApi todoApi;
     private TodosAdapter adapter;
+    private TodoDao todoDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,8 @@ public class TodoListActivity extends AppCompatActivity {
         App application = (App) getApplication();
         loginManager = application.getLoginManager();
         todoApi = application.getTodoApi();
+
+        todoDao = application.getTodoDao();
 
         if (loginManager.hasToLogin()) {
             goToLogin();
@@ -108,6 +114,7 @@ public class TodoListActivity extends AppCompatActivity {
                             adapter.addAll(todosResponse.results);
                             for (Todo result : todosResponse.results) {
                                 Log.d("TAG", result.toString());
+                                todoDao.insert(result, loginManager.getUserId());
                             }
 
                         }

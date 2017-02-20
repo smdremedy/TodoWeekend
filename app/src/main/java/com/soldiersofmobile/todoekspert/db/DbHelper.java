@@ -22,7 +22,7 @@ public class DbHelper extends SQLiteOpenHelper {
                         " %s TEXT)", TodoDao.TABLE_NAME, TodoDao.C_ID,
                 TodoDao.C_CONTENT, TodoDao.C_DONE, TodoDao.C_CREATED_AT,
                 TodoDao.C_UPDATED_AT, TodoDao.C_USER_ID);
-        Timber.d("onCreate sql:" + sql);
+        Timber.d("onCreate sql:%s", sql);
         db.execSQL(sql);
 
     }

@@ -52,4 +52,8 @@ public class LoginManager {
     public String getToken() {
         return preferences.getString(LoginAsyncTask.TOKEN, "");
     }
+
+    public String getUserId() {
+        return preferences.getString(LoginAsyncTask.USER_ID, "");
+    }
 }

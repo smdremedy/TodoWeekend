@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.soldiersofmobile.todoekspert.db.DbHelper;
+import com.soldiersofmobile.todoekspert.db.TodoDao;
 import com.squareup.leakcanary.LeakCanary;
 
 import java.lang.annotation.Annotation;
@@ -14,17 +16,29 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 public class App extends Application {
 
     private LoginManager loginManager;
     private TodoApi todoApi;
     private Converter<ResponseBody, ErrorResponse> converter;
+    private TodoDao todoDao;
 
     @Override
     public void onCreate() {
         super.onCreate();
         LeakCanary.install(this);
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        } else {
+            Timber.plant(new Timber.Tree() {
+                @Override
+                protected void log(int priority, String tag, String message, Throwable t) {
+
+                }
+            });
+        }
         SharedPreferences preferences
                 = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -44,11 +58,12 @@ public class App extends Application {
                 .build();
 
         converter = retrofit.responseBodyConverter(ErrorResponse.class,
-            new Annotation[0]);
+                new Annotation[0]);
 
         todoApi = retrofit.create(TodoApi.class);
 
         loginManager = new LoginManager(preferences, todoApi, converter);
+        todoDao = new TodoDao(new DbHelper(this));
     }
 
     public LoginManager getLoginManager() {
@@ -61,5 +76,9 @@ public class App extends Application {
 
     public Converter<ResponseBody, ErrorResponse> getConverter() {
         return converter;
+    }
+
+    public TodoDao getTodoDao() {
+        return todoDao;
     }
 }

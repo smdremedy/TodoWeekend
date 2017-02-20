@@ -1,5 +1,10 @@
 package com.soldiersofmobile.todoekspert.db;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.soldiersofmobile.todoekspert.Todo;
+
 public class TodoDao {
     /**
      * Nazwy kolumn w DB.
@@ -16,6 +21,25 @@ public class TodoDao {
      */
     public static final String TABLE_NAME = "todos";
 
+    private DbHelper dbHelper;
+
+    public TodoDao(DbHelper dbHelper) {
+        this.dbHelper = dbHelper;
+    }
+
+    public void insert(Todo todo, String userId) {
+
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(C_ID, todo.getObjectId());
+        values.put(C_DONE, todo.isDone());
+        values.put(C_CONTENT, todo.getContent());
+        values.put(C_USER_ID, userId);
+
+        database.insertWithOnConflict(TABLE_NAME, null, values,
+                SQLiteDatabase.CONFLICT_REPLACE);
+
+    }
 
 
 }
